@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 import cmath as math
+from arch import arch_model
 
 
 def dev_mean(series):
@@ -134,10 +135,32 @@ def adf_test_for_column(column):
         print(f"Fail to reject the null hypothesis for {column.name}. The data is non-stationary.")
 
 
-    
+def params_garch(data):
+    best_aic = float("inf")
+    best_bic = float("inf")
+    best_params = None
 
+    for p in range(1, 5):  # Adjust as needed
+        for q in range(1, 5):  # Adjust as needed
+            # Fit GARCH model
+            model = arch_model(data, vol='GARCH', p=p, q=q)
+            results = model.fit(disp='off')
 
+            # Calculate AIC and BIC
+            aic = results.aic
+            bic = results.bic
 
+            # Update if smaller AIC or BIC found
+            if aic < best_aic:
+                best_aic = aic
+                best_params = (p, q)
+            if bic < best_bic:
+                best_bic = bic
+                best_params = (p, q)
 
-    
- 
+    return best_params
+
+# Example usage:
+# Assuming 'data' is your time series data
+# Replace it with your actual data
+# best_params, best_aic, best_bic = find_smallest_garch(data)    
