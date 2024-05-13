@@ -135,32 +135,109 @@ def adf_test_for_column(column):
         print(f"Fail to reject the null hypothesis for {column.name}. The data is non-stationary.")
 
 
-def params_garch(data):
-    best_aic = float("inf")
-    best_bic = float("inf")
-    best_params = None
-
-    for p in range(1, 5):  # Adjust as needed
-        for q in range(1, 5):  # Adjust as needed
-            # Fit GARCH model
-            model = arch_model(data, vol='GARCH', p=p, q=q)
-            results = model.fit(disp='off')
-
-            # Calculate AIC and BIC
-            aic = results.aic
-            bic = results.bic
-
-            # Update if smaller AIC or BIC found
-            if aic < best_aic:
+def params_garch(data, max_p, max_q):
+    import itertools
+    """
+    Returns the optimal parameters, GARCH model and results 
+    """
+    best_aic = np.inf
+    best_bic = np.inf
+    best_p = 0
+    best_q = 0
+    
+    for p, q in itertools.product(range(max_p+1), range(max_q+1)):
+        if p == 0 and q == 0:
+            continue
+            
+        try:
+            model = arch.arch_model(data, vol='Garch', p=p, q=q)
+            result = model.fit(disp='off')
+            aic = result.aic
+            bic = result.bic
+            
+            if aic < best_aic and result.pvalues[-1] < 0.05:
                 best_aic = aic
-                best_params = (p, q)
-            if bic < best_bic:
+                best_p = p
+                best_q = q
+            
+            if bic < best_bic and result.pvalues[-1] < 0.05:
                 best_bic = bic
-                best_params = (p, q)
-
-    return best_params
+                best_p = p
+                best_q = q
+                
+        except:
+            continue
+    
+    return best_p, best_q
 
 # Example usage:
 # Assuming 'data' is your time series data
 # Replace it with your actual data
 # best_params, best_aic, best_bic = find_smallest_garch(data)    
+
+
+def params_arch(data, max_p):
+    import itertools
+    """
+    Returns the optimal parameters, ARCH model and results 
+    """
+    best_aic = np.inf
+    best_bic = np.inf
+    best_p = 0
+        
+    for p in range(max_p+1):
+        if p == 0:
+           continue
+            
+        try:
+            model = arch.arch_model(data, vol='ARCH', p=p)
+            result = model.fit(disp='off')
+            aic = result.aic
+            bic = result.bic
+            
+            if aic < best_aic and result.pvalues[-1] < 0.05:
+                best_aic = aic
+                best_p = p
+            
+            if bic < best_bic and result.pvalues[-1] < 0.05:
+                best_bic = bic
+                best_p = p
+                
+        except:
+            continue
+    
+    return best_p
+
+# Example usage:
+# Assuming you have a pandas DataFrame 'returns' containing your return data
+# best_p, best_aic, best_bic = find_best_arch_params(returns, max_p=5)
+
+
+def data_mom(data, type):
+    
+    if type == 'pct':
+        def mom(x):
+            mom = (x - x.shift(1))
+            annmom = mom*12
+            ann3m = (x-x.shift(3))*4
+            ann6m = (x-x.shift(6))*2
+            yoy = (x-x.shift(12))
+            return mom, annmom, ann3m, ann6m, yoy
+        
+    else:
+        def mom(x):
+            mom = 100*(x).pct_change()
+            annmom = 100*(x).pct_change()*12
+            ann3m = 100*(((x/x.shift(3))-1)*4)
+            ann6m = 100*(((x/x.shift(6))-1)*2)
+            yoy = 100*((x/x.shift(12))-1)
+            return mom, annmom, ann3m, ann6m, yoy
+        
+    for i in data.columns:
+        col_names = [f'{i}_mom', f'{i}_annmom', f'{i}_ann3m', f'{i}_ann6m', f'{i}_yoy']
+        data_a = pd.DataFrame(mom(data[i]))
+        data_a.index = col_names
+        data_b = data_a.T
+        data[col_names] = data_b
+
+    data = data.dropna()
