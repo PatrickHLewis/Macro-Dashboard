@@ -2,6 +2,8 @@ import numpy as np
 import pandas as pd
 import cmath as math
 from arch import arch_model
+from datetime import datetime
+
 
 
 def dev_mean(series):
@@ -241,3 +243,7 @@ def data_mom(data, type):
         data[col_names] = data_b
 
     data = data.dropna()
+
+def year_month(data):
+    data.index = pd.to_datetime(data.index).strftime('%Y-%m')
+    return data
