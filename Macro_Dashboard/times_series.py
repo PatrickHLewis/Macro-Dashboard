@@ -96,7 +96,8 @@ def highlight_cells_dev(val):
         return 'background-color: {}'.format(color4)
 
 def grangers_causation_matrix(data, variables, test='ssr_chi2test', verbose=False):
-    """Check Granger Causality of all possible combinations of the Time series.
+    """
+    Check Granger Causality of all possible combinations of the Time series.
     The rows are the response variable, columns are predictors. The values in the table 
     are the P-Values. P-Values lesser than the significance level (0.05), implies 
     the Null Hypothesis that the coefficients of the corresponding past values is 
@@ -247,3 +248,4 @@ def data_mom(data, type):
 def year_month(data):
     data.index = pd.to_datetime(data.index).strftime('%Y-%m')
     return data
+
