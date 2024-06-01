@@ -13,7 +13,7 @@ third party organizations and built in-house. The asset class section will use t
 ##### NFP prints, Beveridge Curve, Leading Indicators, Long-term Indicators
 
 ### Growth 
-##### Government, Investment, Consumer, Leading Indicators
+##### Government, Investment, Consumer, Net Exports, Leading Indicators
 ##### Growth Decomposition: Labor Inputs, Labor Productivity  
 
 ## Asset Classes
