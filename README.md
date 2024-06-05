@@ -7,7 +7,7 @@ third party organizations and built in-house. The asset class section will use t
 ## Macro Drivers
 
 ### Inflation
-##### Inflation Momentum, Trend, Expectations, Ad Hoc/Thematic, Models
+##### Inflation Momentum, Trend, Expectations, Ad Hoc/Thematic, Models (ARIMA and VARMA)
 
 ### Labor
 ##### NFP prints, Beveridge Curve, Leading Indicators, Long-term Indicators
