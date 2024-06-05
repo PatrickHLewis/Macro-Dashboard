@@ -249,3 +249,6 @@ def year_month(data):
     data.index = pd.to_datetime(data.index).strftime('%Y-%m')
     return data
 
+def yoy(data):
+    data = 100*((data/data.shift(12))-1)
+    return data
