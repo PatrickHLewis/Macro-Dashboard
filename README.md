@@ -10,7 +10,7 @@ third party organizations and built in-house. The asset class section will use t
 ##### Inflation Momentum, Trend, Expectations, Ad Hoc/Thematic, Models (ARIMA and VARMA)
 
 ### Labor
-##### NFP prints, Beveridge Curve, Leading Indicators, Long-term Indicators
+##### High Frequency Data, Beveridge Curve, Leading Indicators, Long-term Indicators
 
 ### Growth 
 ##### Government, Investment, Consumer, Net Exports, Leading Indicators
