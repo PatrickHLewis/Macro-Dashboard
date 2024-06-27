@@ -252,3 +252,134 @@ def year_month(data):
 def yoy(data):
     data = 100*((data/data.shift(12))-1)
     return data
+
+def get_non_zero_columns(data):
+    non_zero_columns = []
+    
+    for index, row in data.iterrows():
+        non_zero_cols = row[row != 0].index.tolist()
+        non_zero_columns.append(non_zero_cols)
+    
+    return non_zero_columns
+
+
+import numpy as np
+import pandas as pd
+from statsmodels.tsa.api import VAR
+from statsmodels.tsa.stattools import grangercausalitytests
+import warnings
+
+warnings.filterwarnings('ignore')
+
+def params_var(data, max_lags, criterion='aic'):
+    """
+    Find the best lag order for a VAR model based on AIC or BIC.
+
+    Parameters:
+    data (pd.DataFrame): Multivariate time series data.
+    max_lags (int): Maximum number of lags to test.
+    criterion (str): Criterion to minimize ('aic' or 'bic').
+
+    Returns:
+    int: Best lag order.
+    float: Best criterion value.
+    """
+    best_criterion_value = np.inf
+    best_lag = 0
+    
+    for lag in range(1, max_lags + 1):
+        try:
+            model = VAR(data)
+            result = model.fit(lag)
+            
+            if criterion == 'aic':
+                current_criterion_value = result.aic
+            elif criterion == 'bic':
+                current_criterion_value = result.bic
+            else:
+                raise ValueError("Criterion must be either 'aic' or 'bic'")
+            
+            if current_criterion_value < best_criterion_value:
+                best_criterion_value = current_criterion_value
+                best_lag = lag
+                
+        except Exception as e:
+            print(f"An error occurred for lag {lag}: {e}")
+            continue
+    
+    return best_lag, best_criterion_value
+
+def johansen_cointegration_test(df, significance_level=0.05):
+    cointegrated_pairs = []
+    column_pairs = combinations(df.columns, 2)
+    for col1, col2 in column_pairs:
+        # Perform Johansen cointegration test
+        result = coint_johansen(df[[col1, col2]], det_order=0, k_ar_diff=1)
+        
+        # Get trace statistic and critical values
+        trace_stat = result.lr1[0]  # Trace statistic for the first eigenvalue
+        crit_value = result.cvt[0, 1]  # Critical value at 5% significance level
+
+        print(f"Johansen Cointegration test between {col1} and {col2}:")
+        print(f"Trace Statistic: {trace_stat}")
+        print(f"Critical Value (5% level): {crit_value}")
+
+        # Check if the trace statistic is greater than the critical value
+        if trace_stat > crit_value:
+            print(f"Reject the null hypothesis. There is cointegration between {col1} and {col2}.")
+            cointegrated_pairs.append((col1, col2))
+        else:
+            print(f"Fail to reject the null hypothesis. There is no cointegration between {col1} and {col2}.")
+        print("\n")
+    return cointegrated_pairs
+
+def johansen_cointegration_matrix(df, significance_level=0.05):
+    import pandas as pd
+    from statsmodels.tsa.vector_ar.vecm import coint_johansen
+    from itertools import combinations
+    # Create an empty DataFrame to store the results
+    columns = df.columns
+    results_matrix = pd.DataFrame(index=columns, columns=columns, data=0.0)
+    
+    for col1, col2 in combinations(columns, 2):
+        # Perform Johansen cointegration test
+        result = coint_johansen(df[[col1, col2]], det_order=0, k_ar_diff=1)
+        
+        # Get trace statistic and critical value
+        trace_stat = result.lr1[0]  # Trace statistic for the first eigenvalue
+        crit_value = result.cvt[0, 1]  # Critical value at 5% significance level
+
+        # If trace statistic is greater than the critical value, set the value in the matrix
+        if trace_stat > crit_value:
+            results_matrix.at[col1, col2] = trace_stat
+            results_matrix.at[col2, col1] = trace_stat
+    
+    return results_matrix
+
+
+def gradient_color(val):
+    """
+    Takes a scalar and returns a string with
+    the css property 'background-color: red' for
+    values less than -1, green for values greater
+    than 1, and a gradient in between for the
+    values in between.
+    """
+    r = int(175 * (1 - (val + 1) / (1 + 1)))
+    g = int(100 * ((val + 1) / (1 + 1)))
+    b = 0
+    return f'background-color: rgb({r},{g},{b})'
+
+
+def gradient_color_ret(val):
+    """
+    Takes a scalar and returns a string with
+    the css property 'background-color: red' for
+    values less than -3, green for values greater
+    than 3, and a gradient in between for the
+    values in between.
+    """
+    r = int(175 * (1 - (val + 12) / (1 + 12)))
+    g = int(100 * ((val + 12) / (1 + 12)))
+    b = 0
+    return f'background-color: rgb({r},{g},{b})'
