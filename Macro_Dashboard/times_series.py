@@ -383,3 +383,16 @@ def gradient_color_ret(val):
     g = int(100 * ((val + 12) / (1 + 12)))
     b = 0
     return f'background-color: rgb({r},{g},{b})'
+
+def gradient_color_val(val):
+    """
+    Takes a scalar and returns a string with
+    the css property 'background-color: green' for
+    values less than 0, red for values greater
+    than 0, and a gradient in between for the
+    values in between.
+    """
+    r = int(100 * ((val + 1) / (1 + 1)))
+    g = int(175 * (1 - (val + 1) / (1 + 1)))
+    b = 0
+    return f'background-color: rgb({r},{g},{b})'
