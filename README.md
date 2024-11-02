@@ -18,13 +18,13 @@ third party organizations and built in-house. The asset class section will use t
 
 ## Asset Classes
 ### Equities, Rates, FX, Credit, Multi-Asset, Volatility
-Valuation, Momentum, Positioning, Macro, Technicals, and Fair Value Models (Yield Curve, EPS, OAS), Correlations
+Valuation, Momentum, Positioning, Macro, Technicals, and Fair Value Models (Yield Curve, EPS, OAS)
 
 ## Asset Allocation
 ### Tactical 
-Value, Momentum, Mean Reversal and Positioning; Business Cycle Model
+Value, Momentum, Mean Reversal and Positioning; Business Cycle Model; Correlations & Betas
 ### Strategic 
-Capital Market Expectations
+Capital Market Expectations; Long-term Correlations
 
 
 
